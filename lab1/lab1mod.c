@@ -27,21 +27,27 @@ static const struct proc_ops lab1_fops = {
 };
 #else
 static const struct file_operations lab1_fops = {
-  /* operation mapping */
+  .owner = THIS_MODULE,
+  .open = lab1_open,
+  .read = seq_read,
+  .llseek = seq_lseek,
+  .release = single_release
 };
 #endif
 
 static int __init lab1_init(void) {
-  /* create proc entry */
+  if(proc_create("lab1", 0 ,NULL, &lab1_fops) == NULL){
+    return -ENOMEM;
+  }
   printk(KERN_INFO "lab1mod in\n");
   return 0;
 }
 
 static void __exit lab1_exit(void) {
-  /* remove proc entry */
+  remove_proc_entry("lab1",0);
   printk(KERN_INFO "lab1mod out\n");
 }
 
 MODULE_LICENSE("GPL");
-module_init(/*some function here*/);
-module_exit(/*some function here*/);
+module_init(lab1_init);
+module_exit(lab1_exit);

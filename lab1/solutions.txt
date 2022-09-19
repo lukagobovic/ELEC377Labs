@@ -2,4 +2,17 @@ Problem:
 The goal of the lab was to build a module which accesses the information of the process that calls it which is stored in the process control block.
 
 Solution:
-To approach this, we created a module called "lab1" which when executed outputs: the name of the running process, its PID and PPID, and various UID and GID information. 
+- To approach this, we created a module called "lab1" which when executed outputs: the name of the running process, its PID and PPID, and various UID and GID information.
+  - This information was pulled using "task_struct", a linux data structure that contains information about the current process and was used to grab the name, PID, PPID, and state.
+    - As the variable for state returned a long integer (and not a label), the group used a switch case statement to output a description of the state for easier viewing. 
+  - The UID and GID information was then accessed through the cred struct. 
+- The proc_create function that is used in the initialization contains a reference to instructions on how to generate the contents of the file (the file operations structure)
+  - The file operations structure was defined to contain operations such as which function to call when the file is opened/read/closed
+  - If the create function fails, then an error is thrown indicating there is not enough memory available
+- The remove_proc_entry function that was defined is called when the process is done executing, and is used to help with clean up
+
+- The flow of the process:
+  - When the module is initialized, it calls lab1_init which creates the process
+    - If the process can't be created throw an error and exit
+  - When creating the module, it is specified that the function lab1_open should be called when starting the process
+  - This function then opens, reads, and outputs the process information using the lab1_show function

@@ -46,7 +46,10 @@ static int lab1_open(struct inode *inode, struct file *file)
 
 #ifdef HAVE_PROC_OPS
 static const struct proc_ops lab1_fops = {
-    /* operation mapping */
+    .proc_open = lab1_open,
+    .proc_read = seq_read,
+    .proc_lseek = seq_lseek,
+    .proc_release = single_release
 };
 #else
 static const struct file_operations lab1_fops = {
@@ -54,7 +57,8 @@ static const struct file_operations lab1_fops = {
     .open = lab1_open,
     .read = seq_read,
     .llseek = seq_lseek,
-    .release = single_release};
+    .release = single_release
+};
 #endif
 
 static int __init lab1_init(void)

@@ -1,3 +1,5 @@
+//Output when running the process as root
+
 Current Process PCB Information
 Name =  cat
 PID =  36513

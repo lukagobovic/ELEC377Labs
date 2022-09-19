@@ -14,5 +14,5 @@ Solution:
 - The flow of the process:
   - When the module is initialized, it calls lab1_init which creates the process
     - If the process can't be created throw an error and exit
-  - When creating the module, it is specified that the function lab1_open should be called when starting the process
+  - When creating the module, it is specified that the function lab1_open should be called when the calling process goes to opens a file
   - This function then opens, reads, and outputs the process information using the lab1_show function

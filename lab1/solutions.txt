@@ -1,0 +1,5 @@
+Problem:
+The goal of the lab was to build a module which accesses the information of the process that calls it which is stored in the process control block.
+
+Solution:
+To approach this, we created a module called "lab1" which when executed outputs: the name of the running process, its PID and PPID, and various UID and GID information. 

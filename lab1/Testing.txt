@@ -1,0 +1,8 @@
+The second document describes your testing. This includes a description of each test
+case and how it confirms that your program works correctly. Both output and input
+
+For this lab, the test cases are not exactly that obvious. The main "test cases" are running the process as a regular user, and running the process in ROOT. 
+When run in ROOT, all the UIDs and GIDs were set to 0, where as when run with a student netid account, the values are all non-zero. Additionally, the other test cases
+involved us running using the cat command, which populated the name field in the output file with "cat", and running using the more command, which populated the name 
+field with "more". The output files are named lab1cat.txt and lab1more.txt, for the process being run on the student account, and lab1catROOT.txt and lab1moreROOT.txt for the
+process being run on the ROOT.

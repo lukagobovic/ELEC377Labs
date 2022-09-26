@@ -129,12 +129,10 @@ int main(int argc, char * argv[]){
 
 void init_shared( struct shared_segment * shmemptr ){
 
-    sem_t * mutex1;
-    mutex1 = sem_open("/mutex1", O_RDWR | O_CREAT, 0660, 1);
-    sem_t * mutex2;
-    mutex2 = sem_open("/mutex2", O_RDWR | O_CREAT, 0660, 1);
-    sem_t * mutex3;
-    mutex3 = sem_open("/mutex3", O_RDWR | O_CREAT, 0660, 1);
+
+    access_stats = sem_open(ACCESS_STATS_NAME, O_RDWR | O_CREAT, 0660, 1);
+    mutex = sem_open(MUTEX_NAME, O_RDWR | O_CREAT, 0660, 1);
+    access_summary = sem_open(ACCESS_SUMMARY_NAME, O_RDWR | O_CREAT, 0660, 1);
 
 	shmemptr -> monitorCount = 0;
 }

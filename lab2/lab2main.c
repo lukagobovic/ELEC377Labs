@@ -23,8 +23,8 @@ const char * ACCESS_STATS_NAME = "/access_stats";
 const char * ACCESS_SUMMARY_NAME = "/access_summary";
 const char * MUTEX_NAME = "/mutex";
 
-sem_t * access_stats;
-sem_t * access_summary;
+sem_t * access_stats; // monitor and summarizer  
+sem_t * access_summary; // summarizer and printer
 sem_t * mutex;
 
 void init_shared_mem_seg( struct shared_segment * shmemptr );
@@ -59,7 +59,7 @@ int main(int argc, char * argv[]){
     testLog('M',"Monitor threads %d", num_monitor_threads);
 
     if (num_monitor_threads > MAX_MACHINES){
-        fprintf(stderr,"Max number of montiros is %d\n", MAX_MACHINES);
+        fprintf(stderr,"Max number of montiors is %d\n", MAX_MACHINES);
         exit(1);
     }
 
@@ -135,15 +135,15 @@ void init_shared( struct shared_segment * shmemptr ){
     access_summary = sem_open(ACCESS_SUMMARY_NAME, O_RDWR | O_CREAT, 0660, 1);
 
     if(access_stats = SEM_FAILED){
-        perror("error_no");
+        perror(errno);
         exit(1);
     }
      if(mutex = SEM_FAILED){
-        perror("error_no");
+        perror(errno);
         exit(1);
     }
      if(access_summary = SEM_FAILED){
-        perror("error_no");
+        perror(errno);
         exit(1);
     }
 
@@ -176,16 +176,10 @@ void monitor_update_status_entry(int machine_id, int status_id, struct status * 
     //------------------------------------
     //  enter critical section for monitor
     //------------------------------------
-    if(sem_wait(&access_stats) == -1){
+    if(sem_wait(&mutex) == -1){ // If wait on semaphore fails
+        perror(errno);
         exit(1);
     }
-    if(sem_wait(&mutex) == -1){
-        exit(1);
-    }
-    if(sem_wait(&access_summary) == -1){
-        exit(1);
-    }
-    
     
 
     //------------------------------------

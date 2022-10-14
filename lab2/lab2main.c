@@ -134,6 +134,19 @@ void init_shared( struct shared_segment * shmemptr ){
     mutex = sem_open(MUTEX_NAME, O_RDWR | O_CREAT, 0660, 1);
     access_summary = sem_open(ACCESS_SUMMARY_NAME, O_RDWR | O_CREAT, 0660, 1);
 
+    if(access_stats = SEM_FAILED){
+        perror("error_no");
+        exit(1);
+    }
+     if(mutex = SEM_FAILED){
+        perror("error_no");
+        exit(1);
+    }
+     if(access_summary = SEM_FAILED){
+        perror("error_no");
+        exit(1);
+    }
+
 	shmemptr -> monitorCount = 0;
 }
 
@@ -163,7 +176,16 @@ void monitor_update_status_entry(int machine_id, int status_id, struct status * 
     //------------------------------------
     //  enter critical section for monitor
     //------------------------------------
-
+    if(sem_wait(&access_stats) == -1){
+        exit(1);
+    }
+    if(sem_wait(&mutex) == -1){
+        exit(1);
+    }
+    if(sem_wait(&access_summary) == -1){
+        exit(1);
+    }
+    
     
 
     //------------------------------------
@@ -183,6 +205,15 @@ void monitor_update_status_entry(int machine_id, int status_id, struct status * 
     // exit critical setion for monitor
     //------------------------------------
 
+    if(sem_post(&access_stats) == -1){
+        exit(1);
+    }
+    if(sem_post(&mutex) == -1){
+        exit(1);
+    }
+    if(sem_post(&access_summary) == -1){
+        exit(1);
+    }
 
 }
 
@@ -305,7 +336,7 @@ void * printer_thread(void * parms){
         
         for (int i = 0; i < num_machines; i++){
         }
-        
+         
         // release summary mutex
 
 

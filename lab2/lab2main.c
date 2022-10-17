@@ -363,7 +363,7 @@ void * printer_thread(void * parms){
     struct shared_segment * shmemptr = ((struct printer_thread_param*)parms)->shmemptr;
     int print_period = ((struct printer_thread_param*)parms)->print_period;
     int num_machines = ((struct printer_thread_param*)parms)-> num_machines;
-    int more_updates = 0;
+    int more_updates = 1;
     unsigned cur_uptime;
     unsigned cur_time;
 

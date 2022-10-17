@@ -7,6 +7,10 @@
 // Copyright 2022 Iffy Maduabuchi, Thomas Dean
 //-
 
+// Questions:
+//  - Output for overwritten or normal case
+//  - Error handling on all sem_wait and sem_post?
+
 #include "common.h"
 
 
@@ -101,10 +105,18 @@ int main(int argc, char * argv[]){
     
     // TODO: stage 2
     // start reader thread
+    pthread_t reader_id;
+    reader_param.num_machines = num_monitor_threads;
+    reader_param.shmemptr = &shared_memory;
+    pthread_create(&reader_id, &thread_attr, reader_thread, (void *)&reader_param);
     
     // TODO: stage 3
     // start printer thread
-    
+    pthread_t printer_id;
+    printer_param.num_machines = num_monitor_threads;
+    printer_param.shmemptr = &shared_memory;
+    printer_param.print_period = printer_delay;
+    pthread_create(&printer_id, &thread_attr, printer_thread, (void *)&printer_param);
     // ---------------------------------------------------
     // FINISH - use pthread_exit instead of return.
     // When the main program finishes all threads are 
@@ -134,18 +146,21 @@ void init_shared( struct shared_segment * shmemptr ){
     mutex = sem_open(MUTEX_NAME, O_RDWR | O_CREAT, 0660, 1);
     access_summary = sem_open(ACCESS_SUMMARY_NAME, O_RDWR | O_CREAT, 0660, 1);
 
-    if(access_stats = SEM_FAILED){
-        perror(errno);
-        exit(1);
-    }
-     if(mutex = SEM_FAILED){
-        perror(errno);
-        exit(1);
-    }
-     if(access_summary = SEM_FAILED){
-        perror(errno);
-        exit(1);
-    }
+    reader_param.shmemptr = shmemptr;
+    printer_param.shmemptr = shmemptr;
+
+    // if(access_stats = SEM_FAILED){
+    //     perror("Access stats");
+    //     exit(1);
+    // }
+    //  if(mutex = SEM_FAILED){
+    //     perror("Mutex");
+    //     exit(1);
+    // }
+    //  if(access_summary = SEM_FAILED){
+    //     perror("Access summary");
+    //     exit(1);
+    // }
 
 	shmemptr -> monitorCount = 0;
 }
@@ -176,39 +191,59 @@ void monitor_update_status_entry(int machine_id, int status_id, struct status * 
     //------------------------------------
     //  enter critical section for monitor
     //------------------------------------
-    if(sem_wait(&mutex) == -1){ // If wait on semaphore fails
-        perror(errno);
+    if(sem_wait(mutex) == -1){ // If wait on semaphore fails
+        perror("Mutex");
         exit(1);
     }
-    
+    shmemptr -> monitorCount++;
+    if(shmemptr->monitorCount == 1){ // No monitors currently in the section, only allow one summary thread
+        if(sem_wait(access_summary) == -1){ // If wait on semaphore fails
+            perror("Access summary");
+            exit(1);
+        }
+    }
+    if(sem_post(mutex) == -1){
+        perror("Mutex");
+        exit(1);
+    }
 
     //------------------------------------
     // monitor critical section
     //------------------------------------
 
-    
     // store the monitor data
+   
+    shmemptr->machine_stats[machine_id].discards_per_second = cur_read_stat->discards_per_second; 
+    shmemptr->machine_stats[machine_id].load_factor = cur_read_stat->load_factor; 
+    shmemptr->machine_stats[machine_id].machine_state = cur_read_stat->machine_state;
+    shmemptr->machine_stats[machine_id].num_of_processes = cur_read_stat->num_of_processes;
+    shmemptr->machine_stats[machine_id].packets_per_second = cur_read_stat->packets_per_second;
+    shmemptr->machine_stats[machine_id].timestamp = cur_read_stat->timestamp;
     
-
+    if(shmemptr->machine_stats[machine_id].read == 1){
+        colourMsg(machId[machine_id] ,CONSOLE_GREEN,"Data overwritten");
+    }
     
     // report if overwritten or normal case (Stage 2)
-    
+
     // mark as unread
+    shmemptr->machine_stats[machine_id].read = 0;
 
     //------------------------------------
     // exit critical setion for monitor
     //------------------------------------
-
-    if(sem_post(&access_stats) == -1){
+    sem_wait(mutex);
+    shmemptr -> monitorCount--;
+    if(shmemptr->monitorCount == 0){
+          if(sem_post(access_summary) == -1){ // If wait on semaphore fails
+                perror("Mutex");
+                exit(1);
+    }
+    }
+      if(sem_post(mutex) == -1){
+        perror("Mutex");
         exit(1);
     }
-    if(sem_post(&mutex) == -1){
-        exit(1);
-    }
-    if(sem_post(&access_summary) == -1){
-        exit(1);
-    }
-
 }
 
 
@@ -233,40 +268,49 @@ void * reader_thread(void * parms){
     unsigned read_update_times[MAX_MACHINES];
     int read_machines_state[MAX_MACHINES];
     
-    int total_procs, total_pps, total_dps;
-    float total_lf;
+    int total_procs = 0, total_pps = 0, total_dps = 0;
+    float total_lf = 0.0;
     
     long summary_checksum;
     
-    threadLog('R',"Readeer Thread: %d machines", num_machines);
+    threadLog('R',"Reader Thread: %d machines", num_machines);
     msleep(1000);
     
     while(more_updates){
-        threadLog('R',"Readeer Thread loop start", num_machines);
+        threadLog('R',"Reader Thread loop start", num_machines);
 
 
         // aquire stats semaphore
-
+        sem_wait(access_stats);
         
-        threadLog('R',"Readeer Thread loop accessing_stats lock aquired", num_machines);
+        threadLog('R',"Reader Thread loop accessing_stats lock aquired", num_machines);
 
-        // check for updates toeach machine
+        // check for updates to each machine
         // collect stats for all machines
         
-        
-        
-        
-        
-        
-        
+        for(int i = 0; i < num_machines; i++){
+            if(shmemptr -> machine_stats[i].machine_state == 0){
+                colourMsg(machId[i], CONSOLE_RED, "Machine %d is down", i);
+            }
+            if(shmemptr -> machine_stats[i].read == 0){
+                read_machines_state[i] = shmemptr -> machine_stats[i].machine_state;
+                read_update_times[i] = shmemptr -> machine_stats[i].timestamp;
+                shmemptr -> machine_stats[i].read = 1;
+
+            }
+            total_dps += shmemptr->machine_stats[i].discards_per_second;
+            total_procs += shmemptr->machine_stats[i].num_of_processes;
+            total_lf += shmemptr->machine_stats[i].load_factor;
+            total_pps += shmemptr->machine_stats[i].packets_per_second;
+        }
         
         
         // release stats semaphore
- 
-        threadLog('R',"Readeer Thread loop  accessing_stats lock released", num_machines);
+        sem_post(access_stats);
+        threadLog('R',"Reader Thread loop  accessing_stats lock released", num_machines);
 
 
-        //checksum - consume time outside of critical section.
+        // //checksum - consume time outside of critical section.
         shmemptr->checksum_seed = gen_checksum_seed();
         summary_checksum = gen_summary_checksum();
 
@@ -276,21 +320,36 @@ void * reader_thread(void * parms){
         //=======================
         
         // lock summary semaphore
+        sem_wait(access_summary);
         
         // write summary checksum
-        
-        // update machine uptime sand last heard
-        
+        shmemptr->summary.checksum = summary_checksum;
+        // update machine uptimes and last heard
+        for(int i = 0; i < num_machines; i++){
+            shmemptr->summary.machines_state[i] = read_machines_state[i];
+            shmemptr->summary.machines_online_since[i] = 0;
+            if(read_machines_state[i]){
+                shmemptr->summary.machines_online_since[i] = read_update_times[i];          
+                }
+            if(read_update_times[i] != 0){
+                shmemptr->summary.machines_last_updated[i] = read_update_times[i];
+            }
+        }
         // calculate new averages
-        
+        shmemptr->summary.avg_procs = total_procs/num_machines;
+        shmemptr->summary.avg_dps = total_dps/num_machines;
+        shmemptr->summary.avg_pps = total_pps/num_machines;
+        shmemptr->summary.avg_lf = total_lf/num_machines;
+
         // releast summary semaphore
+        sem_post(access_summary);
         
         //=======================
         // are the monitors still running? (Stage 2)
         //=======================
         
-        
-        threadLog('R',"Readeer Thread loop end", num_machines);
+        threadLog('R',"Reader Thread loop end", num_machines);
+        if(shmemptr -> numMonitors == 0) more_updates = 0;
     }
     
     pthread_exit(0);
@@ -304,7 +363,7 @@ void * printer_thread(void * parms){
     struct shared_segment * shmemptr = ((struct printer_thread_param*)parms)->shmemptr;
     int print_period = ((struct printer_thread_param*)parms)->print_period;
     int num_machines = ((struct printer_thread_param*)parms)-> num_machines;
-    int more_updates = 1;
+    int more_updates = 0;
     unsigned cur_uptime;
     unsigned cur_time;
 
@@ -318,23 +377,31 @@ void * printer_thread(void * parms){
         msleep(print_period);
         
         // aquire summary mutex
-        
+        sem_wait(access_summary);
+
         // get current time
-        
+
         // printe summary
         threadLog('P',"Printer Step");
 
         printf("[%u] SUMMARY INFORMATION\n", get_current_unix_time());
-        printf("MACHINE | UP | UPTIME                 | LAST UPDATE  \n");
+        printf("MACHINE | UP | UPTIME\t| LAST UPDATE \t\n");
         printf("-----------------------------------------------------\n");
         
         for (int i = 0; i < num_machines; i++){
+            cur_time = get_current_unix_time();
+            if(shmemptr->summary.machines_state[i]){
+                cur_uptime = cur_time - shmemptr->summary.machines_online_since[i];
+            }
+            printf("%d\t| %d\t| %d\t| %d\t\n", i, shmemptr->machine_stats[i].machine_state, cur_uptime ,shmemptr->summary.machines_last_updated[i]);
         }
          
         // release summary mutex
+        sem_post(access_summary);
 
 
         //Are the monitors still running.
+        if(shmemptr -> numMonitors == 0) more_updates = 0;
     }
     
     pthread_exit(0);

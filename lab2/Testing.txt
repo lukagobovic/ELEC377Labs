@@ -1,0 +1,2 @@
+As we can see from comparing the output log to the given machine text files, when the machines are supposed to be down
+When there is new data that comes in, and the reader thread runs, and new data is available again, the program outputs that the data has been overwritten

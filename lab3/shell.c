@@ -32,9 +32,9 @@
 #define CMD_BUFFSIZE 1024
 #define MAXARGS 10
 
-int splitCommandLine(char * commandBuffer, char* args[], int maxargs);
-int doInternalCommand(char * args[], int nargs);
-int doProgram(char * args[], int nargs);
+int splitCommandLine(char *commandBuffer, char *args[], int maxargs);
+int doInternalCommand(char *args[], int nargs);
+int doProgram(char *args[], int nargs);
 
 //+
 // Function:	main
@@ -47,11 +47,12 @@ int doProgram(char * args[], int nargs);
 // Returns:	integer (exit status of shell)
 //-
 
-int main() {
+int main()
+{
 
     char commandBuffer[CMD_BUFFSIZE];
     // note the plus one, allows for an extra null
-    char *args[MAXARGS+1];
+    char *args[MAXARGS + 1];
 
     // print prompt.. fflush is needed because
     // stdout is line buffered, and won't
@@ -59,46 +60,48 @@ int main() {
     printf("%%> ");
     fflush(stdout);
 
-    while(fgets(commandBuffer,CMD_BUFFSIZE,stdin) != NULL){
-        //printf("%s",commandBuffer);
+    while (fgets(commandBuffer, CMD_BUFFSIZE, stdin) != NULL)
+    {
+        // printf("%s",commandBuffer);
 
-	// remove newline at end of buffer
-	int cmdLen = strlen(commandBuffer);
-	if (commandBuffer[cmdLen-1] == '\n'){
-	    commandBuffer[cmdLen-1] = '\0';
-	    cmdLen--;
-            //printf("<%s>\n",commandBuffer);
-	}
+        // remove newline at end of buffer
+        int cmdLen = strlen(commandBuffer);
+        if (commandBuffer[cmdLen - 1] == '\n')
+        {
+            commandBuffer[cmdLen - 1] = '\0';
+            cmdLen--;
+            // printf("<%s>\n",commandBuffer);
+        }
 
-	// split command line into words.(Step 2)
+        // split command line into words.(Step 2)
 
-	// TODO
+        // TODO
 
-	// add a null to end of array (Step 2)
+        // add a null to end of array (Step 2)
 
-	// TODO
+        // TODO
 
-	// debugging
-	//printf("%d\n", nargs);
-	//int i;
-	//for (i = 0; i < nargs; i++){
-	//   printf("%d: %s\n",i,args[i]);
-	//}
-	// element just past nargs
-	//printf("%d: %x\n",i, args[i]);
+        // debugging
+        // printf("%d\n", nargs);
+        // int i;
+        // for (i = 0; i < nargs; i++){
+        //   printf("%d: %s\n",i,args[i]);
+        //}
+        // element just past nargs
+        // printf("%d: %x\n",i, args[i]);
 
         // TODO: check if 1 or more args (Step 3)
-        
+
         // TODO: if one or more args, call doInternalCommand  (Step 3)
-        
+
         // TODO: if doInternalCommand returns 0, call doProgram  (Step 4)
-        
+
         // TODO: if doProgram returns 0, print error message (Step 3 & 4)
         // that the command was not found.
 
-	// print prompt
-	printf("%%> ");
-	fflush(stdout);
+        // print prompt
+        printf("%%> ");
+        fflush(stdout);
     }
     return 0;
 }
@@ -119,7 +122,8 @@ int main() {
 //		or skip is the null character
 //-
 
-char * skipChar(char * charPtr, char skip){
+char *skipChar(char *charPtr, char skip)
+{
     // TODO: contents of function
     // TODO: replace null with proper value
     return NULL;
@@ -137,22 +141,26 @@ char * skipChar(char * charPtr, char skip){
 //
 //-
 
-int splitCommandLine(char * commandBuffer, char* args[], int maxargs){
-   // TODO: Contents of function
-    
-   // TODO: reutrn proper value
-   return 0;
+int splitCommandLine(char *commandBuffer, char *args[], int maxargs)
+{
+    char *token;
+    token = strtok(line, LSH_TOK_DELIM);
+    while (token != NULL)
+    {
+        tokens[position] = token;
+        position++;
+    }
+    return 0;
 }
 
 ////////////////////////////// External Program  (Note this is step 4, complete doeInternalCommand first!!) ///////////////////////////////////
 
 // list of directorys to check for command.
 // terminated by null value
-char * path[] = {
+char *path[] = {
     ".",
     "/usr/bin",
-    NULL
-};
+    NULL};
 
 //+
 // Funtion:	doProgram
@@ -167,34 +175,36 @@ char * path[] = {
 //		0 = could not find and execute the file
 //-
 
-int doProgram(char * args[], int nargs){
-  // find the executable
-  // TODO: add body.
-  // Note this is step 4, complete doInternalCommand first!!!
+int doProgram(char *args[], int nargs)
+{
+    // find the executable
+    // TODO: add body.
+    // Note this is step 4, complete doInternalCommand first!!!
 
-  return 1;
+    return 1;
 }
 
 ////////////////////////////// Internal Command Handling (Step 3) ///////////////////////////////////
 
 // define command handling function pointer type
-typedef void(*commandFunc)(char * args[], int nargs);
+typedef void (*commandFunc)(char *args[], int nargs);
 
 // associate a command name with a command handling function
-struct cmdStruct{
-   char 	* cmdName;
-   commandFunc 	cmdFunc;
+struct cmdStruct
+{
+    char *cmdName;
+    commandFunc cmdFunc;
 };
 
 // prototypes for command handling functions
 // TODO: add prototype for each comamand function
 
 // list commands and functions
-// must be terminated by {NULL, NULL} 
+// must be terminated by {NULL, NULL}
 // in a real shell, this would be a hashtable.
 struct cmdStruct commands[] = {
-   // TODO: add entry for each command
-   { NULL, NULL}		// terminator
+    // TODO: add entry for each command
+    {NULL, NULL} // terminator
 };
 
 //+
@@ -210,7 +220,8 @@ struct cmdStruct commands[] = {
 //		0 = args[0] is not an internal command
 //-
 
-int doInternalCommand(char * args[], int nargs){
+int doInternalCommand(char *args[], int nargs)
+{
     // TODO: function contents (step 3)
     return 0;
 }

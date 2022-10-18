@@ -124,10 +124,13 @@ int main()
 
 char *skipChar(char *charPtr, char skip)
 {
-    // TODO: contents of function
-    // TODO: replace null with proper value
-    return NULL;
+    while(&charPtr == skip){
+        charPtr++;
+    }
+    return charPtr;
 }
+
+
 
 //+
 // Funtion:	splitCommandLine
@@ -143,15 +146,18 @@ char *skipChar(char *charPtr, char skip)
 
 int splitCommandLine(char *commandBuffer, char *args[], int maxargs)
 {
-    char *token;
-    token = strtok(line, LSH_TOK_DELIM);
-    while (token != NULL)
-    {
-        tokens[position] = token;
-        position++;
+    for(int i = 0; i < MAXARGS; i++){
+        commandBuffer = skipChar(commandBuffer, " ");
+        if(&commandBuffer == '\0') break;
+        args[i] = commandBuffer;
+        while(&commandBuffer != " "){
+            commandBuffer++;
+        }
+
     }
-    return 0;
 }
+
+
 
 ////////////////////////////// External Program  (Note this is step 4, complete doeInternalCommand first!!) ///////////////////////////////////
 

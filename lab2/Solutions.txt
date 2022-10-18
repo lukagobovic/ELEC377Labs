@@ -1,0 +1,16 @@
+Problem:
+- The goal of the lab was to use semaphores and monitors to model synchronization between threads.
+
+Solution:
+- To approach this, we first intialized three semaphores: mutex, access_stats, and access_summary
+  - mutex was used to enforce mutual exclusion on the critical sections
+  - access_stats was used for performing the wait and post operations for writing to the shared resources
+  - access_summary was used to ensure only one thread was reading at a time
+- The first function that we developed was used to allow each of the threads to edit the contents inside of the shared segment 
+  - Before updating any content, a check that only one reader is attemping to access the shared content's data is done by using wait(access_summary)
+  - After updating the fields, a check to see if the information has been read already is done and if so a "Data overwritten" log is pushed to the terminal
+  - The 'read' field was also set to 0 to indicate that new information is available
+- Next, we initialized the reader_thread function, which checked if monitors were accessing the shared data, and read any new data into local variables
+  - The local variables are then used to update the summary information that is found within the shared segment
+  - wait() and post() are used for both accessing the stats and the summary information to prevent multiple threads from accessing the shared segment at once
+- Finally, the printer_thread function was created which outputs various information about the threads including the current state, the threads uptime, and the time it was last updated

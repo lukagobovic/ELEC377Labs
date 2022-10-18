@@ -207,7 +207,7 @@ void monitor_update_status_entry(int machine_id, int status_id, struct status *c
     { // No monitors currently in the section, only allow one summary thread
         if (sem_wait(access_summary) == -1)
         { // If wait on semaphore fails
-            perror("Access summary");
+            perror("Access summary wait failed");
             exit(1);
         }
     }
@@ -230,12 +230,14 @@ void monitor_update_status_entry(int machine_id, int status_id, struct status *c
     shmemptr->machine_stats[machine_id].packets_per_second = cur_read_stat->packets_per_second;
     shmemptr->machine_stats[machine_id].timestamp = cur_read_stat->timestamp;
 
+    // report if overwritten or normal case (Stage 2)
+
+
     if (shmemptr->machine_stats[machine_id].read == 1)
     {
         colourMsg(machId[machine_id], CONSOLE_GREEN, "Data overwritten");
     }
 
-    // report if overwritten or normal case (Stage 2)
 
     // mark as unread
     shmemptr->machine_stats[machine_id].read = 0;
@@ -412,7 +414,7 @@ void *printer_thread(void *parms)
         // aquire summary mutex
         if (sem_wait(access_summary) == -1)
         { // If wait on semaphore fails
-            perror("Access summary");
+            perror("Access summary wait failed");
             exit(1);
         }
 
@@ -422,7 +424,7 @@ void *printer_thread(void *parms)
         threadLog('P', "Printer Step");
 
         printf("[%u] SUMMARY INFORMATION\n", get_current_unix_time());
-        printf("MACHINE | UP | UPTIME\t| LAST UPDATE \t\n");
+        printf("MACHINE\t| UP\t| UPTIME\t| LAST UPDATE \t\n");
         printf("-----------------------------------------------------\n");
 
         for (int i = 0; i < num_machines; i++)

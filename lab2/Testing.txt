@@ -1,2 +1,13 @@
-As we can see from comparing the output log to the given machine text files, when the machines are supposed to be down
-When there is new data that comes in, and the reader thread runs, and new data is available again, the program outputs that the data has been overwritten
+The main testing of the code consited of running the command: ./lab2main 3 1500.
+This command, consting of two parameters, the number of monitor files to read and the number of msec that the printer routine needs to wait between loops.
+The first value, is set at three since there are three machine text files to read, and the second number was set to 1500, as that is a value within
+the range that was specified. 
+
+For this lab, as we can see from comparing the output log to the given machine text files, when the machines are supposed to be down, a message
+stating which machine is down will be printed. Additionally, when there is new data that comes in, and the reader thread runs, and new data is 
+available again, the program outputs that the data has been overwritten. Both of the previous outputs allowed us to test if various parts of the 
+code were functioning as expected, as if neither of these outputs showed up in the terminal, something serious would be wrong.
+
+Some of the other statements in the terminal and output log file, outline generally what is going on with the various threads, i.e when the reader
+thread is active, or when the lock to the crtical section is aquired. Again, these statements allow us to ensure the proper functionality of the program
+

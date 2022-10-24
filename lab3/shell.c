@@ -75,27 +75,27 @@ int main()
 
         // split command line into words.(Step 2)
 
-        // TODO
+        int nargs = splitCommandLine(commandBuffer, args, MAXARGS);
 
         // add a null to end of array (Step 2)
 
-        // TODO
+        args[nargs] = '\0';
 
         // debugging
         // printf("%d\n", nargs);
         // int i;
         // for (i = 0; i < nargs; i++){
         //   printf("%d: %s\n",i,args[i]);
-        //}
+        // }
         // element just past nargs
         // printf("%d: %x\n",i, args[i]);
 
         // TODO: check if 1 or more args (Step 3)
-
+        if(nargs!=0){
         // TODO: if one or more args, call doInternalCommand  (Step 3)
-
+             doInternalCommand(args, nargs);
         // TODO: if doInternalCommand returns 0, call doProgram  (Step 4)
-
+        }
         // TODO: if doProgram returns 0, print error message (Step 3 & 4)
         // that the command was not found.
 
@@ -124,7 +124,8 @@ int main()
 
 char *skipChar(char *charPtr, char skip)
 {
-    while(&charPtr == skip){
+    if (skip == '\0') return charPtr;
+    while(*charPtr == skip){
         charPtr++;
     }
     return charPtr;
@@ -146,15 +147,20 @@ char *skipChar(char *charPtr, char skip)
 
 int splitCommandLine(char *commandBuffer, char *args[], int maxargs)
 {
-    for(int i = 0; i < MAXARGS; i++){
-        commandBuffer = skipChar(commandBuffer, " ");
-        if(&commandBuffer == '\0') break;
-        args[i] = commandBuffer;
-        while(&commandBuffer != " "){
-            commandBuffer++;
-        }
-
+    int count = 0; 
+    for(int i = 0; i < maxargs; i++){ // Ensure that the number of arguments are less than the max number
+        commandBuffer = skipChar(commandBuffer, ' '); 
+        if(*commandBuffer == '\0') return count;
+        args[count] = commandBuffer; // Point args element to the first character in the parameter's word
+        count++;
+        commandBuffer = strchr(commandBuffer, ' '); // Look for the next space in the buffer
+        if(commandBuffer == NULL) return count; // If strchr returned NULL, there is no more spaces
+        *commandBuffer = '\0'; // Currently pointing at the space after the word so replace it with a '\0'
+        commandBuffer++; // After setting the \0, look at the next character
     }
+    fprintf(stderr, "Too many arguments!"); // Number of parameters was larger than allowed
+    return 0;
+
 }
 
 
@@ -203,13 +209,17 @@ struct cmdStruct
 };
 
 // prototypes for command handling functions
-// TODO: add prototype for each comamand function
+void exitFunc(char * args[], int nargs);
+void pwdFunc(char * args[], int nargs);
+
 
 // list commands and functions
 // must be terminated by {NULL, NULL}
 // in a real shell, this would be a hashtable.
 struct cmdStruct commands[] = {
     // TODO: add entry for each command
+    {"exit", exitFunc},
+    {"pwd", pwdFunc},
     {NULL, NULL} // terminator
 };
 
@@ -227,8 +237,15 @@ struct cmdStruct commands[] = {
 //-
 
 int doInternalCommand(char *args[], int nargs)
-{
-    // TODO: function contents (step 3)
+{   
+    int i = 0;
+    while(commands[i].cmdName != NULL){
+        if(*commands[i].cmdName == *args[0]){
+            commands[i].cmdFunc(args, nargs);
+            return 1;
+        }
+        i++;
+    }
     return 0;
 }
 
@@ -240,3 +257,12 @@ int doInternalCommand(char *args[], int nargs)
 // goes here. Also make sure a comment block prefaces
 // each of the command handling functions.
 
+void exitFunc(char* args[], int nargs){
+    exit(0);
+}
+
+void pwdFunc(char* args[], int nargs){
+    char *cwd = getcwd(NULL, 0);
+    printf("%s\n", cwd);
+    free(cwd);
+}

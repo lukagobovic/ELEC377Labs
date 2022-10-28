@@ -211,6 +211,8 @@ struct cmdStruct
 // prototypes for command handling functions
 void exitFunc(char * args[], int nargs);
 void pwdFunc(char * args[], int nargs);
+void cdFunc(char * args[], int nargs);
+void lsFunc(char* args[], int nargs);
 
 
 // list commands and functions
@@ -220,6 +222,8 @@ struct cmdStruct commands[] = {
     // TODO: add entry for each command
     {"exit", exitFunc},
     {"pwd", pwdFunc},
+    {"cd", cdFunc},
+    {"ls", lsFunc},
     {NULL, NULL} // terminator
 };
 
@@ -239,14 +243,14 @@ struct cmdStruct commands[] = {
 int doInternalCommand(char *args[], int nargs)
 {   
     int i = 0;
-    while(commands[i].cmdName != NULL){
-        if(*commands[i].cmdName == *args[0]){
-            commands[i].cmdFunc(args, nargs);
+    while(commands[i].cmdName != NULL){ // Iterate through commands list until we reach NULL
+        if(*commands[i].cmdName == *args[0]){  // Check if args[0] exists in list
+            commands[i].cmdFunc(args, nargs); // call command corresponding to args[0] 
             return 1;
         }
-        i++;
+        i++; // Look at the next command in the list
     }
-    return 0;
+    return 0; // args[0] is not an internal command
 }
 
 ///////////////////////////////
@@ -258,11 +262,62 @@ int doInternalCommand(char *args[], int nargs)
 // each of the command handling functions.
 
 void exitFunc(char* args[], int nargs){
-    exit(0);
+    exit(0); // Exit the program
 }
+
+// If file name starts with a ., do not include it (return 0) else return 1
+int file_select(const struct dirent *entry)
+{
+    return entry->d_name[0] != 46; // 46 is ascii for '.'
+}
+
+void lsFunc(char* args[], int nargs){
+    struct dirent ** namelist;
+    int numEnts;
+    if(nargs == 2){ // Check if optional parameter is passed
+        if(strcmp(args[1], "-a") == 0) numEnts = scandir(".",&namelist,NULL,NULL); // Do not use filter if -a is passed
+        else{
+            fprintf(stderr, "Invalid Argument\n");
+            return;
+        }
+    }
+    else numEnts = scandir(".",&namelist,file_select,NULL); // If parameter is not passed, use the file_select filter
+    int i = 0;
+    while(i < numEnts){
+            printf("%s  ",namelist[i]->d_name); // Cycle thorugh namelist, and print out file names
+            i++;
+        }
+    printf("\n");
+}
+
 
 void pwdFunc(char* args[], int nargs){
     char *cwd = getcwd(NULL, 0);
     printf("%s\n", cwd);
     free(cwd);
+}
+
+void cdFunc(char* args[], int nargs){
+    struct passwd *pw = getpwuid(getuid());
+    if(pw == NULL){
+        fprintf(stderr, "Unable to retrieve pointer to the password entry file'n");
+        return;
+    }
+
+    char *goTo;
+    if(nargs == 1){
+        if(pw->pw_dir == NULL) {
+            fprintf(stderr, "Unable to find home directory\n");
+            return;
+        }
+        goTo = pw->pw_dir;
+    }
+    else if(nargs == 2){
+        goTo = args[1];
+    }
+    int success = chdir(goTo); // If more than 2 parameters are passed then the error will be thrown
+    if(success != 0){
+        fprintf(stderr, "Unable to go to directory\n");
+        return;
+    } 
 }

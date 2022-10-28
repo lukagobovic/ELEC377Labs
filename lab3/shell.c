@@ -89,16 +89,14 @@ int main()
         // }
         // element just past nargs
         // printf("%d: %x\n",i, args[i]);
-
+        int success;
         // TODO: check if 1 or more args (Step 3)
-        if(nargs!=0){
-        // TODO: if one or more args, call doInternalCommand  (Step 3)
-             doInternalCommand(args, nargs);
+        if(nargs!=0) success = doInternalCommand(args, nargs);
         // TODO: if doInternalCommand returns 0, call doProgram  (Step 4)
-        }
+        if(!success) success = doProgram(args, nargs);
         // TODO: if doProgram returns 0, print error message (Step 3 & 4)
         // that the command was not found.
-
+        if(!success) fprintf(stderr, "Command not found\n");
         // print prompt
         printf("%%> ");
         fflush(stdout);
@@ -192,6 +190,11 @@ int doProgram(char *args[], int nargs)
     // find the executable
     // TODO: add body.
     // Note this is step 4, complete doInternalCommand first!!!
+    int i = 0
+    while(path[i] != NULL){
+        
+        i++;
+    }
 
     return 1;
 }
@@ -244,7 +247,7 @@ int doInternalCommand(char *args[], int nargs)
 {   
     int i = 0;
     while(commands[i].cmdName != NULL){ // Iterate through commands list until we reach NULL
-        if(*commands[i].cmdName == *args[0]){  // Check if args[0] exists in list
+        if(strcmp(commands[i].cmdName, args[0]) == 0){  // Check if args[0] exists in list
             commands[i].cmdFunc(args, nargs); // call command corresponding to args[0] 
             return 1;
         }
@@ -300,7 +303,7 @@ void pwdFunc(char* args[], int nargs){
 void cdFunc(char* args[], int nargs){
     struct passwd *pw = getpwuid(getuid());
     if(pw == NULL){
-        fprintf(stderr, "Unable to retrieve pointer to the password entry file'n");
+        fprintf(stderr, "Unable to retrieve pointer to the password entry file\n");
         return;
     }
 

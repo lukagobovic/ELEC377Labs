@@ -79,7 +79,7 @@ int main()
 
         // add a null to end of array (Step 2)
 
-        args[nargs] = '\0';
+        args[nargs] = NULL;
 
         // debugging
         // printf("%d\n", nargs);
@@ -91,12 +91,16 @@ int main()
         // printf("%d: %x\n",i, args[i]);
         int success;
         // TODO: check if 1 or more args (Step 3)
-        if(nargs!=0) success = doInternalCommand(args, nargs);
+        if(nargs!=0){ 
+            success = doInternalCommand(args, nargs);
         // TODO: if doInternalCommand returns 0, call doProgram  (Step 4)
-        if(!success) success = doProgram(args, nargs);
-        // TODO: if doProgram returns 0, print error message (Step 3 & 4)
-        // that the command was not found.
-        if(!success) fprintf(stderr, "Command not found\n");
+            if(!success){
+                    success = doProgram(args, nargs);
+                    // TODO: if doProgram returns 0, print error message (Step 3 & 4)
+                    // that the command was not found.
+                    if(!success) fprintf(stderr, "Command and/or file not found\n");
+            }
+        }
         // print prompt
         printf("%%> ");
         fflush(stdout);
@@ -175,10 +179,10 @@ char *path[] = {
 //+
 // Funtion:	doProgram
 //
-// Purpose:	TODO: add description of funciton
+// Purpose:	TODO: Searches through system to find requested file
 //
 // Parameters:
-//	TODO: add paramters and description
+//	TODO: The arguments passed in through the command buffer, and the number of arguments that were passed
 //
 // Returns	int
 //		1 = found and executed the file
@@ -190,13 +194,37 @@ int doProgram(char *args[], int nargs)
     // find the executable
     // TODO: add body.
     // Note this is step 4, complete doInternalCommand first!!!
-    int i = 0
+    int i = 0;
+    char *cmd_path;
     while(path[i] != NULL){
-        
+        cmd_path = (char *) malloc(sizeof(char) * (strlen(path[i]) + strlen(args[0]) + 2));
+        sprintf(cmd_path, "%s/%s\0",  path[i], args[0]);
+        struct stat *buffer;
+        int success = stat(cmd_path, buffer);
+        if(!success){ // Located file
+            if(S_ISREG(buffer->st_mode) & S_IXUSR != 0){ // Check if file is executable
+                break;
+            }
+        }
+        free(cmd_path); // Allocating memory on each iteration of the loop, so make sure to free before doing so
         i++;
     }
+    if(*cmd_path == 0) return 0; // If cmd_path was freed, then there was no file found
+    // if(fork() == 0){ // Only execute this code if it is the child process
 
+    // }
+
+    if(fork() == 0){
+        int x = execv(cmd_path, args);
+        printf("%d\n", x);
+    }
+    else{
+        wait(NULL);
+    }
+
+    free(cmd_path);
     return 1;
+    
 }
 
 ////////////////////////////// Internal Command Handling (Step 3) ///////////////////////////////////

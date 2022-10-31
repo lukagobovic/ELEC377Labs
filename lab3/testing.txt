@@ -1,4 +1,4 @@
-To test our shell, we ran 4 seperate tests, producing 4 different output files, all testing seperate aspects of the shell
+To test our shell, we ran 4 separate  tests, producing 4 different output files, all testing separate  aspects of the shell
 The first file, testSplitCommand.txt, was to test the ability of our shell to split the command line. Using the provided 
 debugging code in the main function, the output file shows each of the arguments in the command line being split up, and 
 appropriately indexed. At the end of each args array is the expected null character, and this is also outputted, with

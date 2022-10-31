@@ -1,0 +1,30 @@
+Script started on 2022-10-31 16:24:18-04:00 [TERM="xterm-256color" TTY="/dev/pts/4" COLUMNS="236" LINES="16"]
+]0;19lg26@elec377-Mon-13: ~/elec377-Mon-13/lab3[01;32m19lg26@elec377-Mon-13[00m:[01;34m~/elec377-Mon-13/lab3[00m$ shell[K[K[K[K[K./shell
+%> hello
+Hello 19lg26
+%> hello.ce  exe
+Command and/or file not found
+%> mkdir-    __he    --Hel   help
+Usage: mkdir [OPTION]... DIRECTORY...
+Create the DIRECTORY(ies), if they do not already exist.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -m, --mode=MODE   set file mode (as in chmod), not a=rwx - umask
+  -p, --parents     no error if existing, make parent directories as needed
+  -v, --verbose     print a message for each created directory
+  -Z                   set SELinux security context of each created directory
+                         to the default type
+      --context[=CTX]  like -Z, or if CTX is specified then set the SELinux
+                         or SMACK security context to CTX
+      --help     display this help and exit
+      --version  output version information and exit
+
+GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+Report mkdir translation bugs to <https://translationproject.org/team/>
+Full documentation at: <https://www.gnu.org/software/coreutils/mkdir>
+or available locally via: info '(coreutils) mkdir invocation'
+%> exit
+]0;19lg26@elec377-Mon-13: ~/elec377-Mon-13/lab3[01;32m19lg26@elec377-Mon-13[00m:[01;34m~/elec377-Mon-13/lab3[00m$ exit
+exit
+
+Script done on 2022-10-31 16:24:43-04:00 [COMMAND_EXIT_CODE="0"]

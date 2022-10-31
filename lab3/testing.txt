@@ -1,0 +1,10 @@
+To test our shell, we ran 4 seperate tests, producing 4 different output files, all testing seperate aspects of the shell
+The first file, testSplitCommand.txt, was to test the ability of our shell to split the command line. Using the provided 
+debugging code in the main function, the output file shows each of the arguments in the command line being split up, and 
+appropriately indexed. At the end of each args array is the expected null character, and this is also outputted, with
+each of the outputs ending with a 0. The output of the file validates the splitCommand line works as expected 
+
+Next, we tested the embedded commands of our shell, these being pwd, cd, ls and exit. The output for this test can be 
+found in testEmbeddedCommands.txt. First we tested the ls command to show the files in the current directory. The ls 
+command showed all of the files currently in our lab3 folder, with the ls -a command being run next. This command shows
+all the hidden files in the directory.

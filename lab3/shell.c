@@ -81,14 +81,15 @@ int main()
 
         args[nargs] = NULL;
 
-        // debugging
+        // //debugging
         // printf("%d\n", nargs);
         // int i;
         // for (i = 0; i < nargs; i++){
         //   printf("%d: %s\n",i,args[i]);
         // }
-        // element just past nargs
+        // //element just past nargs
         // printf("%d: %x\n",i, args[i]);
+
         int success;
         // TODO: check if 1 or more args (Step 3)
         if(nargs!=0){ 
@@ -194,29 +195,30 @@ int doProgram(char *args[], int nargs)
     // find the executable
     // TODO: add body.
     // Note this is step 4, complete doInternalCommand first!!!
+
     int i = 0;
     char *cmd_path;
     while(path[i] != NULL){
         cmd_path = (char *) malloc(sizeof(char) * (strlen(path[i]) + strlen(args[0]) + 2));
-        sprintf(cmd_path, "%s/%s\0",  path[i], args[0]);
-        struct stat *buffer;
-        int success = stat(cmd_path, buffer);
+        sprintf(cmd_path, "%s/%s",  path[i], args[0]);
+        struct stat buffer;
+        int success = stat(cmd_path, &buffer);
         if(!success){ // Located file
-            if(S_ISREG(buffer->st_mode) & S_IXUSR != 0){ // Check if file is executable
+            if(S_ISREG(buffer.st_mode) && (S_IXUSR & buffer.st_mode) != 0){ // Check if file is executable
                 break;
             }
         }
         free(cmd_path); // Allocating memory on each iteration of the loop, so make sure to free before doing so
+        cmd_path = NULL;
         i++;
     }
-    if(*cmd_path == 0) return 0; // If cmd_path was freed, then there was no file found
+    if(cmd_path == 0) return 0; // If cmd_path was freed, then there was no file found
     // if(fork() == 0){ // Only execute this code if it is the child process
 
     // }
 
     if(fork() == 0){
-        int x = execv(cmd_path, args);
-        printf("%d\n", x);
+        execv(cmd_path, args);
     }
     else{
         wait(NULL);

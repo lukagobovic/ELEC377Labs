@@ -1,0 +1,43 @@
+Script started on 2022-10-31 16:21:07-04:00 [TERM="xterm-256color" TTY="/dev/pts/4" COLUMNS="236" LINES="16"]
+]0;19lg26@elec377-Mon-13: ~/elec377-Mon-13/lab3[01;32m19lg26@elec377-Mon-13[00m:[01;34m~/elec377-Mon-13/lab3[00m$ exit./shell[3Pexit./shell
+%> this is a sentence  
+4
+0: this
+1: is
+2: a
+3: sentence
+4: 0
+Command and/or file not found
+%> ti his is a        se cen     entence         
+4
+0: this
+1: is
+2: a
+3: sentence
+4: 0
+Command and/or file not found
+%> does this work
+3
+0: does
+1: this
+2: work
+3: 0
+Command and/or file not found
+%> hello
+1
+0: hello
+1: 0
+Hello 19lg26
+%> ls
+1
+0: ls
+1: 0
+hello.c  hello  shell.c  Makefile  shell  testEmbeddedCommands.txt  testRunningFiles.txt  testSplitCommandLine.txt  
+%> exit
+1
+0: exit
+1: 0
+]0;19lg26@elec377-Mon-13: ~/elec377-Mon-13/lab3[01;32m19lg26@elec377-Mon-13[00m:[01;34m~/elec377-Mon-13/lab3[00m$ ./shell[3Pexit./shell[3Pexit
+exit
+
+Script done on 2022-10-31 16:21:43-04:00 [COMMAND_EXIT_CODE="0"]

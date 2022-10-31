@@ -290,20 +290,28 @@ int doInternalCommand(char *args[], int nargs)
 // comand Handling Functions //
 ///////////////////////////////
 
-// TODO: a function for each command handling function
-// goes here. Also make sure a comment block prefaces
-// each of the command handling functions.
-
+/*+
+This is the exit function, it simply calls exit(0), exiting the program
+-*/
 void exitFunc(char* args[], int nargs){
     exit(0); // Exit the program
 }
 
-// If file name starts with a ., do not include it (return 0) else return 1
+/*+
+This is the file select filter, which is used when there is no parameter called with ls
+If file name starts with a ., do not include it (return 0) else return 1
+-*/
 int file_select(const struct dirent *entry)
 {
     return entry->d_name[0] != 46; // 46 is ascii for '.'
 }
 
+/*+
+This is the function for ls
+This function first checks if there is an argument passed in, if so it does not use a filter and scans the directory as usual
+If there is a parameter, this being the -a parameter, it uses the filter to show the hidden files beginning with a dot
+After filtering, it prints the namelist returned by the scandir function
+-*/
 void lsFunc(char* args[], int nargs){
     struct dirent ** namelist;
     int numEnts;
@@ -323,13 +331,23 @@ void lsFunc(char* args[], int nargs){
     printf("\n");
 }
 
-
+/*+
+This is the function to print the working directory
+It simply uses the get cwd function provided and prints it
+-*/
 void pwdFunc(char* args[], int nargs){
     char *cwd = getcwd(NULL, 0);
     printf("%s\n", cwd);
     free(cwd);
 }
 
+/*+
+This is the function for the change directory function
+Depending on the parameters, it will change the directory as intended
+If there is no parameter passed in, it will change the directory to the home directory
+If there is two dots passed in, that takes the directory up one
+If there is an actual path passed in, cd will take the user to that entered directory
+-*/
 void cdFunc(char* args[], int nargs){
     struct passwd *pw = getpwuid(getuid());
     if(pw == NULL){

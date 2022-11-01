@@ -139,10 +139,13 @@ char *skipChar(char *charPtr, char skip)
 //+
 // Funtion:	splitCommandLine
 //
-// Purpose:	TODO: give descritption of function
+// Purpose:	Create pointers to the start of each word in the command buffer, and store the pointers in the args array. Also add a null character at the end of each word.
+//          
 //
 // Parameters:
-//	TODO: parametrs and purpose
+//	commandBuffer - The input from the command line 
+//  args - Stores pointers to the start of each argument in the command buffer
+//  maxargs - Used to limit the number of arguments that can be passed
 //
 // Returns:	Number of arguments (< maxargs).
 //
@@ -180,10 +183,10 @@ char *path[] = {
 //+
 // Funtion:	doProgram
 //
-// Purpose:	TODO: Searches through system to find requested file
+// Purpose:	Searches through system to find requested file
 //
 // Parameters:
-//	TODO: The arguments passed in through the command buffer, and the number of arguments that were passed
+//	The arguments passed in through the command buffer, and the number of arguments that were passed
 //
 // Returns	int
 //		1 = found and executed the file
@@ -213,10 +216,6 @@ int doProgram(char *args[], int nargs)
         i++;
     }
     if(cmd_path == 0) return 0; // If cmd_path was freed, then there was no file found
-    // if(fork() == 0){ // Only execute this code if it is the child process
-
-    // }
-
     if(fork() == 0){
         execv(cmd_path, args);
     }
@@ -263,10 +262,11 @@ struct cmdStruct commands[] = {
 //+
 // Function:	doInternalCommand
 //
-// Purpose:	TODO: add description
+// Purpose:	Check to see if an internal command was called, and if so execute the correpsonding function
 //
 // Parameters:
-//	TODO: add parameter names and descriptions
+//	args - The array of arguments passed in by the user
+//  nargs - A count of the number of arguments passed in by the user
 //
 // Returns	int
 //		1 = args[0] is an internal command
@@ -345,7 +345,6 @@ void pwdFunc(char* args[], int nargs){
 This is the function for the change directory function
 Depending on the parameters, it will change the directory as intended
 If there is no parameter passed in, it will change the directory to the home directory
-If there is two dots passed in, that takes the directory up one
 If there is an actual path passed in, cd will take the user to that entered directory
 -*/
 void cdFunc(char* args[], int nargs){

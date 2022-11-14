@@ -12,13 +12,17 @@ fi
 echo "Extrating Reader Messages"
 grep '^.\[[01];[0-9][0-9]mR' $1 > $1.Reader
 # add time range to end of file. (Step 3)
+startTime=`head -n 1 $1.Reader | grep -Eo '[0-9]+\.[0-9]+' | sed 's/\.//'`
+endTime=`tail -n 1 $1.Reader | grep -Eo '[0-9]+\.[0-9]+' | sed 's/\.//'`
+printf "Time span: %.2f\n" "$(($endTime-$startTime))e-6" >> $1.Reader
 
 # extract all of the Printer Messages (P)  (Step 1)
 echo "Extrating Summary Printer Messages"
 grep '^.\[[01];[0-9][0-9]mP' $1 > $1.Printer
-
 # add time range to end of file. (Step 3)
-
+startTime=`head -n 1 $1.Printer | grep -Eo '[0-9]+\.[0-9]+' | sed 's/\.//'`
+endTime=`tail -n 1 $1.Printer | grep -Eo '[0-9]+\.[0-9]+' | sed 's/\.//'`
+printf "Time span: %.2f\n" "$(($endTime-$startTime))e-6" >> $1.Printer
 
 #find the number of machines (Step 2)
 monlist=`grep '^.\[[01];[0-9][0-9]m[0-5]' $1 | cut -b 8 | sort -u`
@@ -27,3 +31,4 @@ for i in $monlist ; do
   echo "Extracting Machine "$i"'s Messages"
   grep '^.\[[01];[0-9][0-9]m'$i $1 > $1.thread$i
 done
+

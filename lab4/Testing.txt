@@ -1,0 +1,13 @@
+To test this script, we used the two .out files provided to us which resulted in two seperate test cases. 
+There are multiple output files, those being the 3 or 4 specific thread output files. In the .thread(0,1,2 or 3) 
+files, only the traces corresponding to the certain thread, i.e 0,1 or 2, are in there. So the thread0 
+file contains all the traces from machine 0, and so on. The other output files, the .reader and .printer 
+files, contain only the traces corresponding to the reader and printer. This can be identified by the 
+R that is found after the two digit number near the beginning of the trace. The file only contains traces with the R 
+The same can be said for the printer file, where only the traces containing the P after the two digit number are in the file. 
+
+As for the time span, to validate this, we take the timestamp of the first trace, and the last one, 
+and subtract them. For example, in the reader file, the first timestamp is 1666976719.369965, and the 
+last timestamp is 1666976741.431129. Using a calculator to subtract these, the answer is 22.061164, 
+which when rounded to 2 decimal places results in a time span of 22.06, directly matching our calculation 
+located at the end of the respective file. 

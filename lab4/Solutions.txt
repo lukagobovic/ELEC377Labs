@@ -1,0 +1,21 @@
+Goal:
+- The goal of the lab was to use bash scripts to extract information from outputs of reader, printer and monitor threads
+
+Solution:
+- First the script checks to ensure that only 1 argument was passed, and that the argument represents a file that exists using the test command
+  - If either of these conditions are not met, then an error is printed and the program is exited
+- Then the script will extract the reader's traces
+  - It does this using grep with a regex pattern to identify lines that relate to the reader, and stores all of the lines into a file with the
+    same file name .Reader appended
+  - The time span is calculated by looking at the timestamp for the first and last lines, and then subtracts them
+    - To deal with float subtraction, the . is removed from the number using sed to make it an integer, and then added again using exponents in 
+      the printf statement 
+- The same process is used for the printer traces
+  - The regex pattern is the same except instead of the last character being an R, it is P
+  - The lines corresponding to the Printer's traces are saved in a file of the same name with .Printer appended
+- For the monitor threads, we first had to identify how many monitors existed and then print out the traces relating to each of the monitors into
+  their respective files
+  - With the information that each monitor is numbered, we isolated the corresponding unique numbers and saved them into an environment variable
+    - i.e. if there are 3 monitors, they would be labelled 0, 1, and 2 and so the environment variable would hold the value 012
+  - The script then iterates through each character in the environment variable, isolates each line corresponding to the respective monitor thread,
+    and saves the lines into a file of the same file name, with 'thread' and the number appended to it 

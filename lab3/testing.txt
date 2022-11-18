@@ -1,0 +1,35 @@
+To test our shell, we ran 4 separate  tests, producing 4 different output files, all testing separate  aspects of the shell
+The first file, testSplitCommand.txt, was to test the ability of our shell to split the command line. Using the provided 
+debugging code in the main function, the output file shows each of the arguments in the command line being split up, and 
+appropriately indexed. At the end of each args array is the expected null character, and this is also outputted, with
+each of the outputs ending with a 0. The output of the file validates the splitCommand line works as expected 
+
+Next, we tested the embedded commands of our shell, these being pwd, cd, ls and exit. The output for this test can be 
+found in testEmbeddedCommands.txt. 
+
+First we tested the ls command to show the files in the current directory. The ls 
+command showed all of the files currently in our lab3 folder, with the ls -a command being run next. This command shows
+all the hidden files in the directory. 
+
+The next command was the cd command, to change directories. First it was run with no parameter, which in a real shell would
+return you to the home directory. After running this, we ran ls, showing that we were in fact in the home directory since 
+only elec377-Mon-13 showed up as a folder. To get back to the lab 3 folder, we showed that the cd commands with parameters worked
+We stepped down each folder until we got back to the lab 3 folder, doing an ls each time to show that we were in the appropriate
+folder.
+
+The next command we tested was pwd. This command has no parameters, and running it will simply print the working directory. This
+of course is dependant on the directory we are in, so after changing the directory back to home, pwd was run showing the we in 
+fact were in the home directory
+
+The final command that was tested was exit. This simply exited the shell, there was not much to test there
+
+The next of the output files was the testRunningFiles.txt. Here, we tested running a valid file in the lab3 folder, an
+invalid file and then a file in usr/bin. The first command was running the hello executable. Running this simply printed 
+my NetID, showing that the command worked. Next, we tried to run hello.exe, which does not exist. The correct error was thrown,
+indicating that this command/file does not exist in the current folder or the usr/bin folder, and that the user needed to enter 
+a new command/file. The last command was running the mkdir --help command, which is a command in usr/bin. The corresponding 
+output for this command is shown in the text file.
+
+Finally, the last file is simply a comparison between the default shell and our shell. We ran a set of commands in the terminal,
+then ran our shell and ran the exact same commands. It can be seen that all of the commands in the default shell match up exactly 
+with the commands run in our own shell, confirming that they behaved as expected.

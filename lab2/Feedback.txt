@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Documentation 3/3
 
 
@@ -8,4 +9,16 @@ Style 2/2
 
 
 Testing 2/2
+=======
+Documentation 3/3
+
+
+Correctness 3/3
+
+
+Style 2/2
+
+
+Testing 2/2
+>>>>>>> 4517cc715b3c90b4a6f4f9460f57106d3efad9a0
 -great job!

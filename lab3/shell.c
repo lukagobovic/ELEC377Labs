@@ -79,26 +79,29 @@ int main()
 
         // add a null to end of array (Step 2)
 
-        args[nargs] = '\0';
+        args[nargs] = NULL;
 
-        // debugging
+        // //debugging
         // printf("%d\n", nargs);
         // int i;
         // for (i = 0; i < nargs; i++){
         //   printf("%d: %s\n",i,args[i]);
         // }
-        // element just past nargs
+        // //element just past nargs
         // printf("%d: %x\n",i, args[i]);
 
+        int success;
         // TODO: check if 1 or more args (Step 3)
-        if(nargs!=0){
-        // TODO: if one or more args, call doInternalCommand  (Step 3)
-             doInternalCommand(args, nargs);
+        if(nargs!=0){ 
+            success = doInternalCommand(args, nargs);
         // TODO: if doInternalCommand returns 0, call doProgram  (Step 4)
+            if(!success){
+                    success = doProgram(args, nargs);
+                    // TODO: if doProgram returns 0, print error message (Step 3 & 4)
+                    // that the command was not found.
+                    if(!success) fprintf(stderr, "Command and/or file not found\n");
+            }
         }
-        // TODO: if doProgram returns 0, print error message (Step 3 & 4)
-        // that the command was not found.
-
         // print prompt
         printf("%%> ");
         fflush(stdout);
@@ -136,10 +139,13 @@ char *skipChar(char *charPtr, char skip)
 //+
 // Funtion:	splitCommandLine
 //
-// Purpose:	TODO: give descritption of function
+// Purpose:	Create pointers to the start of each word in the command buffer, and store the pointers in the args array. Also add a null character at the end of each word.
+//          
 //
 // Parameters:
-//	TODO: parametrs and purpose
+//	commandBuffer - The input from the command line 
+//  args - Stores pointers to the start of each argument in the command buffer
+//  maxargs - Used to limit the number of arguments that can be passed
 //
 // Returns:	Number of arguments (< maxargs).
 //
@@ -177,10 +183,10 @@ char *path[] = {
 //+
 // Funtion:	doProgram
 //
-// Purpose:	TODO: add description of funciton
+// Purpose:	Searches through system to find requested file
 //
 // Parameters:
-//	TODO: add paramters and description
+//	The arguments passed in through the command buffer, and the number of arguments that were passed
 //
 // Returns	int
 //		1 = found and executed the file
@@ -193,7 +199,33 @@ int doProgram(char *args[], int nargs)
     // TODO: add body.
     // Note this is step 4, complete doInternalCommand first!!!
 
+    int i = 0;
+    char *cmd_path;
+    while(path[i] != NULL){
+        cmd_path = (char *) malloc(sizeof(char) * (strlen(path[i]) + strlen(args[0]) + 2));
+        sprintf(cmd_path, "%s/%s",  path[i], args[0]);
+        struct stat buffer;
+        int success = stat(cmd_path, &buffer);
+        if(!success){ // Located file
+            if(S_ISREG(buffer.st_mode) && (S_IXUSR & buffer.st_mode) != 0){ // Check if file is executable
+                break;
+            }
+        }
+        free(cmd_path); // Allocating memory on each iteration of the loop, so make sure to free before doing so
+        cmd_path = NULL;
+        i++;
+    }
+    if(cmd_path == 0) return 0; // If cmd_path was freed, then there was no file found
+    if(fork() == 0){
+        execv(cmd_path, args);
+    }
+    else{
+        wait(NULL);
+    }
+
+    free(cmd_path);
     return 1;
+    
 }
 
 ////////////////////////////// Internal Command Handling (Step 3) ///////////////////////////////////
@@ -211,6 +243,8 @@ struct cmdStruct
 // prototypes for command handling functions
 void exitFunc(char * args[], int nargs);
 void pwdFunc(char * args[], int nargs);
+void cdFunc(char * args[], int nargs);
+void lsFunc(char* args[], int nargs);
 
 
 // list commands and functions
@@ -220,16 +254,19 @@ struct cmdStruct commands[] = {
     // TODO: add entry for each command
     {"exit", exitFunc},
     {"pwd", pwdFunc},
+    {"cd", cdFunc},
+    {"ls", lsFunc},
     {NULL, NULL} // terminator
 };
 
 //+
 // Function:	doInternalCommand
 //
-// Purpose:	TODO: add description
+// Purpose:	Check to see if an internal command was called, and if so execute the correpsonding function
 //
 // Parameters:
-//	TODO: add parameter names and descriptions
+//	args - The array of arguments passed in by the user
+//  nargs - A count of the number of arguments passed in by the user
 //
 // Returns	int
 //		1 = args[0] is an internal command
@@ -239,30 +276,98 @@ struct cmdStruct commands[] = {
 int doInternalCommand(char *args[], int nargs)
 {   
     int i = 0;
-    while(commands[i].cmdName != NULL){
-        if(*commands[i].cmdName == *args[0]){
-            commands[i].cmdFunc(args, nargs);
+    while(commands[i].cmdName != NULL){ // Iterate through commands list until we reach NULL
+        if(strcmp(commands[i].cmdName, args[0]) == 0){  // Check if args[0] exists in list
+            commands[i].cmdFunc(args, nargs); // call command corresponding to args[0] 
             return 1;
         }
-        i++;
+        i++; // Look at the next command in the list
     }
-    return 0;
+    return 0; // args[0] is not an internal command
 }
 
 ///////////////////////////////
 // comand Handling Functions //
 ///////////////////////////////
 
-// TODO: a function for each command handling function
-// goes here. Also make sure a comment block prefaces
-// each of the command handling functions.
-
+/*+
+This is the exit function, it simply calls exit(0), exiting the program
+-*/
 void exitFunc(char* args[], int nargs){
-    exit(0);
+    exit(0); // Exit the program
 }
 
+/*+
+This is the file select filter, which is used when there is no parameter called with ls
+If file name starts with a ., do not include it (return 0) else return 1
+-*/
+int file_select(const struct dirent *entry)
+{
+    return entry->d_name[0] != 46; // 46 is ascii for '.'
+}
+
+/*+
+This is the function for ls
+This function first checks if there is an argument passed in, if so it does not use a filter and scans the directory as usual
+If there is a parameter, this being the -a parameter, it uses the filter to show the hidden files beginning with a dot
+After filtering, it prints the namelist returned by the scandir function
+-*/
+void lsFunc(char* args[], int nargs){
+    struct dirent ** namelist;
+    int numEnts;
+    if(nargs == 2){ // Check if optional parameter is passed
+        if(strcmp(args[1], "-a") == 0) numEnts = scandir(".",&namelist,NULL,NULL); // Do not use filter if -a is passed
+        else{
+            fprintf(stderr, "Invalid Argument\n");
+            return;
+        }
+    }
+    else numEnts = scandir(".",&namelist,file_select,NULL); // If parameter is not passed, use the file_select filter
+    int i = 0;
+    while(i < numEnts){
+            printf("%s  ",namelist[i]->d_name); // Cycle thorugh namelist, and print out file names
+            i++;
+        }
+    printf("\n");
+}
+
+/*+
+This is the function to print the working directory
+It simply uses the get cwd function provided and prints it
+-*/
 void pwdFunc(char* args[], int nargs){
     char *cwd = getcwd(NULL, 0);
     printf("%s\n", cwd);
     free(cwd);
+}
+
+/*+
+This is the function for the change directory function
+Depending on the parameters, it will change the directory as intended
+If there is no parameter passed in, it will change the directory to the home directory
+If there is an actual path passed in, cd will take the user to that entered directory
+-*/
+void cdFunc(char* args[], int nargs){
+    struct passwd *pw = getpwuid(getuid());
+    if(pw == NULL){
+        fprintf(stderr, "Unable to retrieve pointer to the password entry file\n");
+        return;
+    }
+
+    char *goTo;
+    if(nargs == 1){
+        if(pw->pw_dir == NULL) {
+            fprintf(stderr, "Unable to find home directory\n");
+            return;
+        }
+        goTo = pw->pw_dir;
+    }
+    else if(nargs == 2){
+        goTo = args[1];
+    }
+    int success = chdir(goTo); // If more than 2 parameters are passed then the error will be thrown
+    if(success != 0){
+        fprintf(stderr, "Unable to go to directory\n");
+        return;
+    } 
 }

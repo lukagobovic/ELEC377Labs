@@ -1,0 +1,14 @@
+Problem:
+- The goal of the lab was to implement a simple shell program that can execute basic functions and run external programs
+
+Solution:
+- The program first takes the command buffer (the string that is inputted through the command line), identifies the start of each word,
+  and places a pointer to it inside of the args array
+  - A null terminator ('\0') is also placed at the end of each word
+- The first element that is passed will always either be the name of a function or a file name
+- With this knowledge, we first compare the first word against functions
+  - If there is a match, then run the function and then prepare for another input
+- If there is no match, then treat the first argument as a file name and attempt to open the file
+  - If the file is opened successfully, then execute it, otherwise attempt to find the file with a different path prefix
+- If the file is still not opened successfully, then the user did not enter a valid command or file name
+  - Alert the user, and then prepare for another input

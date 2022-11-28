@@ -1,0 +1,5 @@
+Port Number  10000
+The quote server by Jack Teller, TellerSoft
+Hi 377 Student, your quote is:
+Be yourself; everyone else is already taken.
+  -- Oscar Wilde

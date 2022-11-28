@@ -101,6 +101,11 @@ char compromise[120]={
 
 char * compromise1=
     "xxxxxxxxxxxxxxxxxxxx" // 20
+    "xxxxxxxxxxxxxxxxxxxx"
+    "xxxxxxxxxxxxxxxxxxxx"
+    "xxxxxxxxxxxxxxxxxxxx"
+    "xxxxxxxxxxxxxxxxxxxx"
+    "xxxxxxxxxxxxxxxxxxxx"
     "xxxxxxxxxxxxxxxxxxxx" // 40
     "xxxxxxxx"
     "MNOPWXYZ"

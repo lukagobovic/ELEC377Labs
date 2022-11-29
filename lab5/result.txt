@@ -3,3 +3,6 @@ The quote server by Jack Teller, TellerSoft
 Hi 377 Student, your quote is:
 Be yourself; everyone else is already taken.
   -- Oscar Wilde
+
+md5 hash from server is: MD5=c7483b2aed97451154759f867c047615
+

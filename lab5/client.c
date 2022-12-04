@@ -177,7 +177,7 @@ char * compromise1=
 
 // change to write so we can write NULLs
 void Attack(FILE * outfile){
-    fprintf(outfile, "%s", compromise1);  
+    fprintf(outfile, "%s", compromise);  
     fflush(outfile);
 }
 

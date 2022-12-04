@@ -1,0 +1,6 @@
+Doc 3
+Test1.5
+Code 1
+Style 2
+Total 7.5
+Correct test cases and results but cannot split sentence properly while excuting the script. 

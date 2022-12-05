@@ -9,7 +9,7 @@ HOW THE ATTACK WORKS
 Solution:
 - The first step of the lab was to work on the exploit internally. The work for this was done in selfcomp.c. 
   - The first part of the exploit was figuring out how many characters caused a stack overflow. This was done by adding x character to the compromise1 array until not only a segmentation
-    fault occurred, but the string MNOPWXYZ appeared, in hex, in the stack pointer register. To view the registers, we used the gdb debugger and the command info registers. This value was found to
+    fault occurred, but the string MNOPWXYZ appeared, in hex, in the stack base pointer. To view the registers, we used the gdb debugger and the command info registers. This value was found to
     be 160 characters. Once we would switch to the compromise array, instead of having MNOPWXYZ in the return address, we would have shell code, that would then run the attack.
 
   - To develop the shell code, the exploit document was followed. Once the base shell code was developed, there were certain changes that needed to be made to ensure it functioned as expected

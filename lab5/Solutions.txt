@@ -9,7 +9,7 @@ HOW THE ATTACK WORKS
 Solution:
 - The first step of the lab was to work on the exploit internally. The work for this was done in selfcomp.c. 
   - The first part of the exploit was figuring out how many characters caused a stack overflow. This was done by adding x character to the compromise1 array until not only a segmentation
-    fault occurred, but the string MNOPWXYZ appeared, in hex, in the stack pointer register. To view the registers, we used the gdb debugger and the command info registers. This value was found to
+    fault occurred, but the string MNOPWXYZ appeared, in hex, in the stack base pointer. To view the registers, we used the gdb debugger and the command info registers. This value was found to
     be 160 characters. Once we would switch to the compromise array, instead of having MNOPWXYZ in the return address, we would have shell code, that would then run the attack.
 
   - To develop the shell code, the exploit document was followed. Once the base shell code was developed, there were certain changes that needed to be made to ensure it functioned as expected
@@ -20,15 +20,14 @@ Solution:
   - Once the base shell code was established and converted to the appropriate comma separated hex values, we needed to calculate the return address that worked with our stack pointer
     - This process involved running selfcomp.c again with compromise1, using gdb to find the value of the stack pointer, and then subtract that value by 152, the length of the string, minus the last
       8 x characters. This gave us 4 hex values, which were placed into the lower 4 positions of the return address in the shell code
-  - Once the shell code was finished, and the correct number of NOPs was found, the code was run using the compromise array. This printed out the environment variables, indicating the code was working as expected
+  - Once the shell code was finished, and the correct number of NOPs was found. This was done by taking the size of the shell code, 93 hex (147 decimal) and subtracting it from 152. This gives us 5, which 
+  indicates we needed to add 5 NOPs to pad the array.The code was run using the compromise array. This printed out the environment variables, indicating the code was working as expected
 
  - Once the selfcomp code was working, the process had to be repeated with the server. This involved a similar process to above; finding out how many characters were needed for a segmentation fault, in 
   case of the server it was 224,finding the length of the compromise1 array, using gdb to find the stack pointer value, subtract the stack pointer by 216 (length-8), and then replacing the return address 
   in the shell code with the newly calculated one. There was however, one last step that needed to be completed before running the code with the compromise array; find the correct padding (number of NOPs). 
-  This was done by taking the length of the shell code, and subtracting it from the number of characters. This resulted in 69 NOPs, and was further validated as when trying to add one more, a compilation 
-  warning appears. Once this was complete, the shell code for the server was complete and it could be tested. 
+  This was done by taking the length of the shell code (152), and subtracting it from the number of characters before the last 8 x's (216-147 = 69). This resulted in 69 NOPs, and was further validated as 
+  when trying to add one more, a compilation warning appears. Once this was complete, the shell code for the server was complete and it could be tested. 
 - When we ran the code, the environment variable was printed in the terminal, and the MD5 was found to be : c7483b2aed97451154759f867c047615
 
-
-- 
 

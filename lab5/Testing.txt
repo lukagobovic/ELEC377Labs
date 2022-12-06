@@ -7,16 +7,21 @@ same as the output in selfcompVars.txt, apart from the MD5 hash.
 To extract Jack Teller's password, we attempted the script `echo password | md5sum" on several possible passwords and compared the output to the hash
 that was retrieved from the environment variables in clientVars.txt. We knew that the password would be a single word followed by a number, and we
 used Jack's social media account for clues. From this, several pieces of information were extracted that we believed may be used in his passwords:
+- Full name is Jack Teller
 - First car was an Elantra
 - Dog named Ruckus
 - First pet named Smitty
 - Hometown is Modesto
+  - City in California
 - Favourite food is nachos
 - Favourite restaurant is Happy Burritos
 - Favorite color is blue
-- Born in 1998
+- Born on August 18, 1998 (08/18/1998)
 - The fact account is called 'Jack's Facts 377'
+   - Twitter handle also features '377' (@JackTeller377)
 - Someone close to Jack is 'Kate'
+- First job was as a camp counsellor
+- Prefers dogs over cats
 The passwords that we attempted, and their respective MD5 hash are included in attemptedPasswords.txt. From this testing, we were able to determine
 that Jack Teller's password is 'Elantra1998', as its hash was the same as the one found in clientVars.txt.  
 
